@@ -8,3 +8,4 @@ pymupdf
 pandas
 numpy
 rank-bm25
+langchain-ollama
