@@ -9,3 +9,4 @@ pandas
 numpy
 rank-bm25
 langchain-ollama
+pypdf
