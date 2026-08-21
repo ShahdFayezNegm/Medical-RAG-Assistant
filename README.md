@@ -107,7 +107,7 @@ Medical-RAG-Assistant/
 ├── requirements.txt
 │
 ├── .streamlit/
-│   └── secrets.toml
+│   └── secrets.toml        # Local only — not committed to Git
 │
 ├── data/
 │   └── *.pdf
