@@ -1,39 +1,54 @@
 # 🩺 Medical RAG Assistant
 
-> Evidence-grounded medical question answering using **FAISS + BM25 + CrossEncoder reranking + Llama 3.1**.
+> **Evidence-grounded medical question answering** using **FAISS + BM25 + CrossEncoder reranking + Llama 3.1**.
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B.svg)](https://streamlit.io/)
 [![FAISS](https://img.shields.io/badge/FAISS-Vector%20Search-green.svg)](https://github.com/facebookresearch/faiss)
 [![BM25](https://img.shields.io/badge/BM25-Keyword%20Retrieval-orange.svg)](https://en.wikipedia.org/wiki/Okapi_BM25)
-[![Llama](https://img.shields.io/badge/Llama%203.1-8B-purple.svg)](https://ollama.com/)
+[![Llama](https://img.shields.io/badge/Llama%203.1-8B-purple.svg)](https://www.llama.com/)
+
+---
+
+## 🚀 Live Demo
+
+**Try the Medical RAG Assistant directly in your browser:**
+
+👉 [Open the Live Demo](https://medical-rag-assistant-tulcwbelmhazmjdu4pjw4p.streamlit.app/)
+
+No local setup is required to use the hosted application.
 
 ---
 
 ## 📌 Overview
 
-Medical RAG Assistant is a Retrieval-Augmented Generation system for answering questions from an indexed collection of medical PDF documents.
+Medical RAG Assistant is a **Retrieval-Augmented Generation (RAG)** system for evidence-grounded question answering over an indexed collection of medical PDF documents.
 
-Instead of asking the language model to answer directly from its internal knowledge, the system first retrieves relevant evidence from the medical knowledge base and then generates an answer grounded in the retrieved passages.
+Instead of relying only on the language model's internal knowledge, the system first retrieves relevant passages from the medical knowledge base, reranks them, and then generates an answer using the selected evidence.
 
-The application also supports adding new medical PDFs to the existing knowledge base and making their content searchable.
+The application displays the supporting documents and page numbers used for the answer, providing **source and page-level traceability**.
+
+It also supports adding new medical PDFs to the existing knowledge base through the Streamlit interface.
+
+> **Scope:** This project is designed for research, educational, and portfolio purposes. It is an evidence-grounded medical question-answering system rather than an autonomous clinical diagnosis or treatment recommendation system.
 
 ---
 
-## ✨ Key Features
+# ✨ Key Features
 
-- 📚 **Medical PDF Knowledge Base** — index and search a growing collection of medical documents.
-- 🔎 **Hybrid Retrieval** — combines semantic FAISS retrieval with BM25 keyword retrieval.
-- 🎯 **CrossEncoder Reranking** — reranks retrieved chunks at chunk level.
-- 🧠 **Hybrid Relevance Scoring** — combines multiple relevance signals before final selection.
-- 🛡️ **Grounded Answers** — instructs the LLM to use only the retrieved evidence.
-- 📖 **Evidence & Sources** — displays supporting documents and page numbers.
-- ➕ **Incremental PDF Ingestion** — add new medical PDFs from the Streamlit interface.
-- ⏱️ **Performance Tracking** — displays retrieval, generation, and total response time.
-- 🚫 **Unknown Question Rejection** — unsupported questions can be rejected instead of forcing an answer.
-- 💻 **Local LLM Support** — Ollama + Llama 3.1 8B.
-- ☁️ **Hosted LLM Support** — Hugging Face Inference Providers for deployment.
-- 🧪 **Comprehensive Testing** — includes loader, splitter, vector-store, retrieval, BM25, PDF ingestion, RAG, and evaluation tests.
+* 📚 **Medical PDF Knowledge Base** — search an indexed collection of medical documents.
+* 🔎 **Hybrid Retrieval** — combines FAISS semantic retrieval with BM25 keyword retrieval.
+* 🎯 **CrossEncoder Reranking** — reranks retrieved chunks according to question-document relevance.
+* 🧠 **Hybrid Relevance Scoring** — combines retrieval and reranking signals before final evidence selection.
+* 🛡️ **Evidence-Grounded Generation** — instructs the LLM to answer only from retrieved evidence.
+* 📖 **Supporting Evidence** — displays source documents, page numbers, and retrieved passages.
+* ➕ **Incremental PDF Ingestion** — add new medical PDFs directly through the Streamlit interface.
+* 📊 **Knowledge Base Statistics** — displays document and chunk counts.
+* ⏱️ **Performance Tracking** — reports retrieval, generation, and total response time.
+* 🚫 **Unknown Question Rejection** — unsupported questions can be rejected instead of generating unsupported answers.
+* 💻 **Local Inference** — Ollama + Llama 3.1 8B.
+* ☁️ **Hosted Inference** — Hugging Face Inference Providers for deployment.
+* 🧪 **Automated Testing** — tests document loading, chunking, retrieval, indexing, PDF ingestion, RAG, and evaluation.
 
 ---
 
@@ -53,7 +68,6 @@ The application also supports adding new medical PDFs to the existing knowledge 
                                     ▼
                          ┌──────────────────────┐
                          │  Document Splitter   │
-                         │      913 chunks      │
                          └──────────┬───────────┘
                                     │
                     ┌───────────────┴───────────────┐
@@ -77,19 +91,19 @@ The application also supports adding new medical PDFs to the existing knowledge 
                                     │
                                     ▼
                          ┌──────────────────────┐
-                         │ Relevance + Filtering│
+                         │ Relevance Filtering  │
                          └──────────┬───────────┘
                                     │
                                     ▼
                          ┌──────────────────────┐
                          │     Llama 3.1 8B     │
                          │ Evidence-grounded    │
-                         │     Generation        │
+                         │     Generation       │
                          └──────────┬───────────┘
                                     │
                                     ▼
              ┌─────────────────────────────────────────┐
-             │ Answer + Evidence + Sources + Timing   │
+             │ Answer + Evidence + Sources + Timing    │
              └─────────────────────────────────────────┘
 ```
 
@@ -105,9 +119,6 @@ Medical-RAG-Assistant/
 ├── build_faiss.py
 ├── README.md
 ├── requirements.txt
-│
-├── .streamlit/
-│   └── secrets.toml        # Local only — not committed to Git
 │
 ├── data/
 │   └── *.pdf
@@ -135,34 +146,35 @@ Medical-RAG-Assistant/
     ├── test_bm25.py
     ├── test_evaluation.py
     ├── test_loader.py
-    ├── test_mmrr.py
-    ├── test_rag_multiple.py
+    ├── test_mmr.py
     ├── test_rag.py
+    ├── test_rag_multiple.py
     ├── test_retrievers.py
     ├── test_splitter.py
     └── test_vector_store.py
 ```
 
-> **Security note:** `.streamlit/secrets.toml` is required locally for secrets such as `HF_TOKEN`, but it should **never be committed to GitHub**.
+> **Security:** `.streamlit/secrets.toml` is used locally for secrets such as `HF_TOKEN` but is intentionally excluded from GitHub.
 
 ---
 
 # 🔧 Technology Stack
 
-| Component | Technology |
-|---|---|
-| Programming Language | Python 3.12 |
-| User Interface | Streamlit |
-| Semantic Retrieval | FAISS |
-| Keyword Retrieval | BM25 |
-| Reranking | Sentence-Transformers CrossEncoder |
-| Embeddings | Sentence-Transformers embedding model |
-| LLM | Llama 3.1 8B |
-| Local Inference | Ollama |
-| Hosted Inference | Hugging Face Inference Providers |
-| PDF Processing | LangChain Community PDF Loaders |
-| Vector Store | FAISS |
-| Evaluation | Hit@1, Hit@3, Hit@5, MRR, Unknown Rejection |
+| Component            | Technology                                  |
+| -------------------- | ------------------------------------------- |
+| Programming Language | Python 3.12                                 |
+| User Interface       | Streamlit                                   |
+| Semantic Retrieval   | FAISS                                       |
+| Keyword Retrieval    | BM25                                        |
+| Reranking            | Sentence-Transformers CrossEncoder          |
+| Embeddings           | BAAI/bge-small-en-v1.5                      |
+| LLM                  | Llama 3.1 8B                                |
+| Local Inference      | Ollama                                      |
+| Hosted Inference     | Hugging Face Inference Providers            |
+| PDF Processing       | PyMuPDF + LangChain Community Loaders       |
+| Framework            | LangChain                                   |
+| Vector Store         | FAISS                                       |
+| Evaluation           | Hit@1, Hit@3, Hit@5, MRR, Unknown Rejection |
 
 ---
 
@@ -170,30 +182,50 @@ Medical-RAG-Assistant/
 
 ## 1. FAISS Semantic Retrieval
 
-FAISS is used for semantic retrieval based on vector similarity.
+FAISS provides vector-based semantic retrieval.
 
-This allows the system to retrieve relevant passages even when the wording of the user's question differs from the wording used in the source document.
+This allows the system to retrieve relevant passages even when the wording of the question differs from the wording used in the source document.
+
+```text
+Question
+   ↓
+Embedding
+   ↓
+Vector Similarity Search
+   ↓
+Relevant Chunks
+```
 
 ---
 
 ## 2. BM25 Keyword Retrieval
 
-BM25 provides keyword-based retrieval.
+BM25 provides lexical keyword-based retrieval.
 
-This is especially useful for:
+It is particularly useful for:
 
-- Medical terminology
-- Drug names
-- Clinical terms
-- Exact phrases
-- Guideline terminology
-- Recommendation numbers
+* Medical terminology
+* Drug names
+* Clinical terms
+* Exact phrases
+* Guideline terminology
+* Recommendation numbers
+
+```text
+Question
+   ↓
+Token Matching
+   ↓
+BM25 Ranking
+   ↓
+Relevant Chunks
+```
 
 ---
 
 ## 3. Hybrid Retrieval
 
-The system combines semantic FAISS results and BM25 keyword results.
+The system combines FAISS semantic retrieval and BM25 keyword retrieval.
 
 The results are merged and deduplicated before reranking.
 
@@ -201,25 +233,37 @@ The results are merged and deduplicated before reranking.
 Semantic Search
        +
 Keyword Search
-       =
+       ↓
 Hybrid Retrieval
 ```
+
+This combination helps balance semantic similarity with exact medical terminology matching.
 
 ---
 
 ## 4. CrossEncoder Reranking
 
-A CrossEncoder reranks the merged candidates based on the relevance between the user question and each retrieved chunk.
+A CrossEncoder evaluates the relevance between the user question and each retrieved chunk.
 
-This improves the quality of the final evidence passed to the generator.
+The merged candidate set is reranked before the final evidence is selected.
+
+```text
+Hybrid Candidates
+       ↓
+CrossEncoder
+       ↓
+Relevance Ranking
+       ↓
+Top Evidence
+```
 
 ---
 
 ## 5. Relevance Filtering
 
-After reranking, the system applies retrieval and relevance signals to select the most useful evidence chunks.
+After reranking, the system applies relevance signals to select the evidence used for generation.
 
-The system also supports source-aware filtering for known medical domains such as diabetes and hypertension.
+The final context is limited to selected high-relevance chunks to reduce unnecessary context and improve grounding.
 
 ---
 
@@ -227,7 +271,7 @@ The system also supports source-aware filtering for known medical domains such a
 
 Only the selected evidence is passed to Llama 3.1.
 
-The generator is explicitly instructed to:
+The generator is instructed to:
 
 ```text
 Use ONLY the provided evidence.
@@ -238,17 +282,34 @@ Do not add unsupported medical facts.
 Preserve conditions and qualifiers.
 ```
 
-If the evidence is insufficient, the system can return:
+When the evidence is insufficient, the system can return:
 
 ```text
 I don't have enough information.
 ```
 
+This design aims to reduce unsupported generation and improve traceability.
+
 ---
 
 # 📚 Knowledge Base
 
-The application supports dynamic medical PDF ingestion.
+The application supports a growing medical PDF knowledge base.
+
+Current hosted deployment statistics observed during testing:
+
+```text
+Documents: 301
+Chunks:    913
+```
+
+The knowledge base includes medical guidelines and other permitted medical reference documents.
+
+---
+
+# ➕ Incremental PDF Ingestion
+
+A new medical PDF can be added through the Streamlit interface.
 
 The workflow is:
 
@@ -263,56 +324,14 @@ Chunking
      ↓
 Embeddings
      ↓
-FAISS Index
+FAISS Update
      ↓
-BM25 Index
+BM25 Update
      ↓
 Knowledge Base Updated
 ```
 
-During development, the knowledge base increased from:
-
-```text
-289 Documents
-867 Chunks
-```
-
-to:
-
-```text
-301 Documents
-913 Chunks
-```
-
-after adding an additional NHS heart-attack document.
-
-The newly uploaded document was successfully retrieved and used to generate a grounded answer.
-
----
-
-# ➕ Incremental PDF Ingestion
-
-A new medical PDF can be added directly from the Streamlit sidebar.
-
-Workflow:
-
-```text
-Select PDF
-     ↓
-Add to Knowledge Base
-     ↓
-Load + Clean
-     ↓
-Split into Chunks
-     ↓
-Update FAISS
-     ↓
-Refresh BM25
-     ↓
-Document Searchable
-```
-
-This allows the knowledge base to grow without rebuilding the entire application manually from scratch.
+This allows new documents to become searchable without rebuilding the entire application manually.
 
 ---
 
@@ -326,39 +345,34 @@ What is the first-line treatment for type 2 diabetes?
 
 ## Grounded Answer
 
-```text
-The first-line treatment for type 2 diabetes is metformin.
-```
+The application generates an answer from the retrieved evidence and displays the supporting source and page.
 
-## Supporting Evidence
+Example retrieved evidence:
 
 ```text
-Source: data\diabetes_guideline.pdf
+Source: data/diabetes_guideline.pdf
 Page: 68
 ```
 
-The application displays the retrieved evidence together with the generated response.
+Additional supporting evidence may also be displayed when relevant.
+
+> The generated answer is based on the evidence retrieved from the indexed medical documents.
 
 ---
 
 # ❤️ New Medical Document Test
 
-An additional NHS heart-attack document was uploaded through the application.
+An additional NHS heart-attack document was added through the application.
 
-Question:
+Example question:
 
 ```text
 What are the symptoms of a heart attack?
 ```
 
-The system successfully retrieved evidence from:
+The system successfully retrieved evidence from the newly indexed document and displayed the corresponding source and page information.
 
-```text
-2025.04.23_NHS_HUHY_employer-toolkit.pdf
-Page 2
-```
-
-This demonstrates the complete workflow:
+This demonstrates the complete ingestion-to-answer workflow:
 
 ```text
 New PDF
@@ -378,17 +392,17 @@ Evidence + Sources
 
 # 📊 Evaluation
 
-The current evaluation suite achieved:
+The current retrieval and rejection evaluation achieved:
 
-| Metric | Result |
-|---|---:|
-| Hit@1 | **75.00%** |
-| Hit@3 | **100.00%** |
-| Hit@5 | **100.00%** |
-| MRR | **0.875** |
+| Metric            |      Result |
+| ----------------- | ----------: |
+| Hit@1             |  **75.00%** |
+| Hit@3             | **100.00%** |
+| Hit@5             | **100.00%** |
+| MRR               |   **0.875** |
 | Unknown Rejection | **100.00%** |
 
-These metrics are based on the project's current evaluation set and represent a project benchmark rather than a clinical validation study.
+These values are based on the project's current evaluation set and represent a **project benchmark**, not clinical validation.
 
 ---
 
@@ -400,11 +414,11 @@ Percentage of evaluation questions where the expected source page is ranked firs
 
 ## Hit@3
 
-Percentage of evaluation questions where the expected source page appears in the top three.
+Percentage of evaluation questions where the expected source page appears within the top three results.
 
 ## Hit@5
 
-Percentage of evaluation questions where the expected source page appears in the top five.
+Percentage of evaluation questions where the expected source page appears within the top five results.
 
 ## MRR
 
@@ -412,7 +426,7 @@ Mean Reciprocal Rank measures how early the correct evidence appears in the retr
 
 ## Unknown Rejection
 
-Measures whether unsupported questions are rejected instead of receiving an unsupported answer.
+Measures whether unsupported questions are rejected rather than receiving an unsupported answer.
 
 ---
 
@@ -420,20 +434,20 @@ Measures whether unsupported questions are rejected instead of receiving an unsu
 
 The generator is explicitly instructed to:
 
-- Use only the provided evidence
-- Avoid outside medical knowledge
-- Avoid unsupported inference
-- Preserve treatment conditions and qualifiers
-- Avoid inventing sources or page numbers
-- Reject questions when the evidence is insufficient
+* Use only the retrieved evidence.
+* Avoid outside medical knowledge.
+* Avoid unsupported inference.
+* Preserve treatment conditions and qualifiers.
+* Avoid inventing sources or page numbers.
+* State when the available evidence is insufficient.
 
-Unsupported questions return:
+Unsupported questions can return:
 
 ```text
 I don't have enough information.
 ```
 
-This grounding strategy is designed to reduce unsupported generation.
+The system is designed as an **evidence-grounded medical question-answering assistant**, rather than an autonomous clinical decision-making system.
 
 ---
 
@@ -441,19 +455,21 @@ This grounding strategy is designed to reduce unsupported generation.
 
 The application tracks:
 
-- Retrieval time
-- Generation time
-- Total response time
+* Retrieval time
+* Generation time
+* Total response time
 
-Example hosted inference performance observed during testing:
+Example hosted deployment result:
 
 ```text
-Retrieval:   2–10 seconds
-Generation:  ~2 seconds
-Total:       ~10 seconds
+Retrieval:   1.48 seconds
+Generation:  2.58 seconds
+Total:       4.05 seconds
 ```
 
-Local Ollama generation can be significantly slower depending on hardware.
+Performance can vary depending on hosted inference availability, document size, retrieval workload, and infrastructure.
+
+Local Ollama performance can also vary significantly depending on hardware.
 
 ---
 
@@ -463,6 +479,8 @@ Local Ollama generation can be significantly slower depending on hardware.
 
 ```text
 User
+ ↓
+Streamlit
  ↓
 RAG Pipeline
  ↓
@@ -480,7 +498,7 @@ Used for local development and testing.
 ```text
 User
  ↓
-Streamlit
+Streamlit Community Cloud
  ↓
 RAG Pipeline
  ↓
@@ -489,7 +507,9 @@ Hugging Face Inference Providers
 Llama 3.1 8B Instruct
 ```
 
-The application automatically uses hosted inference when `HF_TOKEN` is configured.
+When `HF_TOKEN` is configured, the generator uses hosted Hugging Face inference.
+
+The local Ollama path remains available for local development.
 
 ---
 
@@ -497,15 +517,15 @@ The application automatically uses hosted inference when `HF_TOKEN` is configure
 
 The application provides:
 
-- Medical PDF upload
-- Knowledge Base statistics
-- Medical question input
-- Grounded answers
-- Retrieval timing
-- Generation timing
-- Supporting evidence
-- Source documents
-- Page numbers
+* 📚 Medical PDF upload
+* 📊 Knowledge base statistics
+* 💬 Medical question input
+* 🧠 Evidence-grounded answers
+* ⏱️ Retrieval and generation timing
+* 📖 Supporting evidence
+* 📄 Source documents
+* 🔢 Page numbers
+* 🔬 RAG pipeline details
 
 ---
 
@@ -514,7 +534,7 @@ The application provides:
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/Medical-RAG-Assistant.git
+git clone https://github.com/ShahdFayezNegm/Medical-RAG-Assistant.git
 cd Medical-RAG-Assistant
 ```
 
@@ -553,7 +573,7 @@ Run Ollama:
 ollama serve
 ```
 
-In another terminal:
+Verify the model:
 
 ```powershell
 ollama list
@@ -561,19 +581,19 @@ ollama list
 
 ## 5. Build the FAISS Index
 
-If the FAISS index needs to be rebuilt:
+If the index needs to be rebuilt:
 
 ```powershell
 python build_faiss.py
 ```
 
-## 6. Run the Evaluation
+## 6. Run Evaluation
 
 ```powershell
 python tests/test_evaluation.py
 ```
 
-Expected benchmark for the current tested version:
+Expected benchmark for the tested evaluation set:
 
 ```text
 Hit@1: 3/4 (75.00%)
@@ -599,49 +619,39 @@ http://localhost:8501
 
 # ☁️ Public Deployment
 
-The public deployment architecture is:
+The hosted deployment uses:
 
 ```text
-GitHub Repository
-        ↓
+GitHub
+   ↓
 Streamlit Community Cloud
-        ↓
+   ↓
+Medical RAG Pipeline
+   ↓
 Hugging Face Inference Providers
-        ↓
+   ↓
 Llama 3.1 8B Instruct
 ```
 
-Configure the Streamlit secret:
+### Streamlit Secret
+
+Configure:
 
 ```toml
 HF_TOKEN = "hf_your_token_here"
 ```
 
-Never commit the real token to GitHub.
+The real token should **never** be committed to GitHub.
 
-### Deployment Checklist
+### Current Live Demo
 
-```text
-[ ] Push project to GitHub
-[ ] Add requirements.txt
-[ ] Add .gitignore
-[ ] Exclude secrets
-[ ] Exclude local model weights
-[ ] Prepare FAISS index / knowledge-base files
-[ ] Configure HF_TOKEN in Streamlit Secrets
-[ ] Deploy app.py
-[ ] Test PDF upload
-[ ] Test retrieval
-[ ] Test grounded generation
-[ ] Verify sources and evidence
-[ ] Share public streamlit.app URL
-```
+👉 [Medical RAG Assistant](https://medical-rag-assistant-tulcwbelmhazmjdu4pjw4p.streamlit.app/)
 
 ---
 
-# 🔒 Security & Privacy
+# 🔐 Security & Privacy
 
-Do not commit:
+Never commit:
 
 ```text
 .venv/
@@ -649,13 +659,13 @@ __pycache__/
 .env
 .streamlit/secrets.toml
 API keys
-Ollama credentials
-Private medical documents
+Private credentials
 Private patient information
+Private medical documents
 Private model weights
 ```
 
-For a public medical-document demo, only use documents you are permitted to redistribute.
+For a public medical-document demonstration, only use documents that you are permitted to redistribute.
 
 Do not upload personally identifiable patient information.
 
@@ -663,22 +673,22 @@ Do not upload personally identifiable patient information.
 
 # 🧪 Testing
 
-The project contains a comprehensive test suite covering document ingestion, preprocessing, retrieval, indexing, and end-to-end RAG behavior.
+The project contains tests covering document ingestion, preprocessing, retrieval, indexing, and RAG behavior.
 
 ## Test Suite
 
-| Test | Purpose |
-|---|---|
-| `test_loader.py` | Tests PDF loading and document cleaning |
-| `test_splitter.py` | Tests document chunking and splitting |
-| `test_vector_store.py` | Tests vector-store creation and loading |
-| `test_bm25.py` | Tests BM25 keyword retrieval |
-| `test_retrievers.py` | Tests retrieval components |
-| `test_mmrr.py` | Tests MMR-based semantic retrieval |
-| `test_add_pdf.py` | Tests adding a new PDF to the knowledge base |
-| `test_rag.py` | Tests the RAG pipeline |
-| `test_rag_multiple.py` | Tests RAG behavior across multiple questions |
-| `test_evaluation.py` | Evaluates retrieval ranking and unknown-question rejection |
+| Test                   | Purpose                                                    |
+| ---------------------- | ---------------------------------------------------------- |
+| `test_loader.py`       | Tests PDF loading and document processing                  |
+| `test_splitter.py`     | Tests document chunking and splitting                      |
+| `test_vector_store.py` | Tests FAISS vector-store creation/loading                  |
+| `test_bm25.py`         | Tests BM25 keyword retrieval                               |
+| `test_retrievers.py`   | Tests retrieval components                                 |
+| `test_mmr.py`          | Tests MMR-based retrieval                                  |
+| `test_add_pdf.py`      | Tests adding a new PDF                                     |
+| `test_rag.py`          | Tests the RAG pipeline                                     |
+| `test_rag_multiple.py` | Tests RAG behavior across multiple questions               |
+| `test_evaluation.py`   | Evaluates retrieval ranking and unknown-question rejection |
 
 ---
 
@@ -690,14 +700,12 @@ python tests/test_splitter.py
 python tests/test_vector_store.py
 python tests/test_bm25.py
 python tests/test_retrievers.py
-python tests/test_mmrr.py
+python tests/test_mmr.py
 python tests/test_add_pdf.py
 python tests/test_rag.py
 python tests/test_rag_multiple.py
 python tests/test_evaluation.py
 ```
-
----
 
 ## Run All Tests with Pytest
 
@@ -737,18 +745,19 @@ What should someone do if they think they are having a heart attack?
 
 # 🧩 Technologies
 
-- Python 3.12
-- Streamlit
-- LangChain
-- FAISS
-- BM25
-- Sentence Transformers
-- CrossEncoder
-- PyTorch
-- Hugging Face
-- Ollama
-- Llama 3.1
-- PyPDF
+* Python 3.12
+* Streamlit
+* LangChain
+* FAISS
+* BM25
+* Sentence Transformers
+* CrossEncoder
+* PyTorch
+* Hugging Face
+* Ollama
+* Llama 3.1
+* PyMuPDF
+* PyPDF
 
 ---
 
@@ -761,18 +770,18 @@ What should someone do if they think they are having a heart attack?
 5. Support dynamic medical PDF ingestion.
 6. Combine semantic and keyword retrieval.
 7. Provide both local and hosted inference.
-8. Build a practical Medical AI / RAG application for research and portfolio use.
+8. Demonstrate a practical Medical AI / RAG application for research and portfolio use.
 
 ---
 
 # 📈 Current Project Results
 
 ```text
-✅ FAISS Semantic Search
-✅ BM25 Keyword Search
+✅ FAISS Semantic Retrieval
+✅ BM25 Keyword Retrieval
 ✅ Hybrid Retrieval
 ✅ CrossEncoder Reranking
-✅ Grounded Llama 3.1 Generation
+✅ Evidence-Grounded Llama 3.1 Generation
 ✅ Unknown Question Rejection
 ✅ PDF Knowledge Base Expansion
 ✅ Source + Page Evidence
@@ -790,6 +799,7 @@ What should someone do if they think they are having a heart attack?
 
 **AI Engineer | Medical AI | Computer Vision | Deep Learning | Machine Learning | NLP**
 
-Built as a portfolio project demonstrating practical experience in:
+Interested in building practical AI systems combining:
 
-**Medical AI • Retrieval-Augmented Generation • Information Retrieval • NLP • Generative AI**
+**Medical AI • Retrieval-Augmented Generation • Deep Learning • NLP • Computer Vision • Evidence-Grounded AI**
+
